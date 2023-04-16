@@ -1,7 +1,11 @@
 import telebot
 from telebot import types
+import sqlite3
 
 bot = telebot.TeleBot('6200404821:AAEiHQQAwR2gLbORrYRT42wWu4kHyCeOrKo')
+
+con = sqlite3.connect('eda.db')
+cur = con.cursor()
 
 
 @bot.message_handler(commands=['start'])
