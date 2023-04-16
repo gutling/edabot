@@ -24,6 +24,8 @@ def zapis(message):
         perekus = types.KeyboardButton('перекус')
         markup.add(zavtrak, obed, ujin, perekus)
         bot.send_message(message.chat.id, 'Хорошо, в какой прием пищи?', reply_markup=markup)
+    elif message.text == 'завтрак':
+        pass
     else:
         bot.send_message(message.chat.id, 'Извините, я так не умею')
 
