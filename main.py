@@ -5,6 +5,7 @@ import sqlite3
 bot = telebot.TeleBot('6200404821:AAEiHQQAwR2gLbORrYRT42wWu4kHyCeOrKo')
 
 con = sqlite3.connect('eda.db', check_same_thread=False)
+pol0, ves0, rost0, old0, goal0 = '', 0, 0, 0, 0
 name = ''
 tg_id = 0
 priem = ''
@@ -38,13 +39,14 @@ def input_data(message):
     rost = types.KeyboardButton('/rost')
     ves = types.KeyboardButton('/ves')
     old = types.KeyboardButton('/age')
+    goal = types.KeyboardButton('/goal')
     end = types.KeyboardButton('/ready')
 
-    markup.add(pol, rost, ves, old, end)
+    markup.add(pol, rost, ves, old, goal, end)
     bot.send_message(message.chat.id, 'Укажите свои данные', reply_markup=markup)
 
 
-@bot.message_handler(commands=['pol', 'rost', 'ves', 'age', 'ready'])
+@bot.message_handler(commands=['pol', 'rost', 'ves', 'age', 'goal', 'ready'])
 def obrabotka_data(message):
     if message.text == '/pol':
         markup1 = types.InlineKeyboardMarkup(row_width=2)
@@ -96,45 +98,82 @@ def obrabotka_data(message):
 
         markup4.add(item90, item76, item86, item400, item56, item51, item71, item81, item66, item61, item46, item41)
         bot.send_message(message.chat.id, 'Сколько вы весите?', reply_markup=markup4)
+
+    elif message.text == '/goal':
+        markup5 = types.InlineKeyboardMarkup(row_width=2)
+        item012 = types.InlineKeyboardButton('0', callback_data='12')
+        item014 = types.InlineKeyboardButton('1–3', callback_data='14')
+        item016 = types.InlineKeyboardButton('3–5', callback_data='16')
+        item018 = types.InlineKeyboardButton('каждый день', callback_data='18')
+        item020 = types.InlineKeyboardButton('2 раза в день', callback_data='20')
+
+        markup5.add(item012, item014, item016, item018, item020)
+        bot.send_message(message.chat.id, 'Какой ваш рост?', reply_markup=markup5)
+
     elif message.text == '/ready':
-        markup4 = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1 = types.KeyboardButton('/food')
-        markup4.add(item1)
-        bot.send_message(message.chat.id, 'Все готово!', reply_markup=markup4)
+        if T_or_F() == True:
+            bot.send_message(message.chat.id, f'Вам нужно потреблять {int(calorie_calculation())} в день')
+            markup4 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            item1 = types.KeyboardButton('/food')
+            markup4.add(item1)
+            bot.send_message(message.chat.id, 'Все готово!', reply_markup=markup4)
+        elif T_or_F() == False:
+            bot.send_message(message.chat.id, f'Вы не заполнили все пункты')
+
     else:
         bot.send_message(message.chat.id, 'Извините, я так не умею')
 
 
+def T_or_F():
+    if pol0 != '' and ves0 != 0 and rost0 != 0 and old0 != 0 and goal0 != 0:
+        return True
+    else:
+        return False
+
+
+def calorie_calculation():
+    if pol0 == 'man':
+        ans = (66 + (13.7 * ves0) + (5 * rost0) - (6.76 * old0)) * goal0 / 10
+        return ans
+    elif pol0 == 'woman':
+        ans = (655 + (9.6 * ves0) + (1.8 * rost0) - (4.7 * old0)) * goal0 / 10
+        return ans
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback_imline(call):
-    global pol, ves, rost, old
+    global pol0, ves0, rost0, old0, goal0
     try:
         if call.message:
             if call.data == 'man':
-                pol = 'man'
+                pol0 = 'man'
             elif call.data == 'woman':
-                pol = 'woman'
+                pol0 = 'woman'
 
             if call.data == '<10':
-                old = 10
+                old0 = 10
             elif call.data == '11':
-                old = 11
+                old0 = 11
             elif call.data == '19':
-                old = 19
+                old0 = 19
             elif call.data == '30':
-                old = 30
+                old0 = 30
             elif call.data == '40':
-                old = 40
+                old0 = 40
             elif call.data == '>60':
-                old = 60
+                old0 = 60
 
             for i in range(130, 191, 10):
                 if call.data == str(i):
-                    rost = i
+                    rost0 = i + 10
 
             for i in range(36, 92, 5):
                 if call.data == str(i):
-                    ves = i
+                    ves0 = i + 4
+
+            for i in range(12, 21, 2):
+                if call.data == str(i):
+                    goal0 = i
 
     except Exception as e:
         print(repr(e))
