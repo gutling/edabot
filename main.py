@@ -13,27 +13,40 @@ bluda = []
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    m = f'Доброго времени суток, <i>{message.from_user.first_name}</i>'
+    m1 = 'Для начала вам нужно заполнить свои данные, для этого нажмите кпопку "/input_data".' \
+         'После заполнения нажмите кнопку "/food"'
+    bot.send_message(message.chat.id, m, parse_mode='html')
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    item1 = types.KeyboardButton('/input_data')
+    # item2 = types.KeyboardButton('/food')
+
+    markup.add(item1)
+    bot.send_message(message.chat.id, m1, parse_mode='html', reply_markup=markup)
+
+
+@bot.message_handler(commands=['input_data'])
+def input_data(message):
     global bluda
     cur = con.cursor()
     a = cur.execute(f'''SELECT name FROM main''').fetchall()
     for i in a:
         bluda.append(*i)
-    m = f'Доброго времени суток, {message.from_user.first_name}'
-    bot.send_message(message.chat.id, m, parse_mode='html')
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    pol = types.KeyboardButton('пол')
-    rost = types.KeyboardButton('рост')
-    ves = types.KeyboardButton('вес')
-    old = types.KeyboardButton('возраст')
+    pol = types.KeyboardButton('/pol')
+    rost = types.KeyboardButton('/rost')
+    ves = types.KeyboardButton('/ves')
+    old = types.KeyboardButton('/age')
+    end = types.KeyboardButton('/ready')
 
-    markup.add(pol, rost, ves, old)
+    markup.add(pol, rost, ves, old, end)
     bot.send_message(message.chat.id, 'Укажите свои данные', reply_markup=markup)
 
 
-@bot.message_handler()
+@bot.message_handler(commands=['pol', 'rost', 'ves', 'age', 'ready'])
 def obrabotka_data(message):
-    if message.text == 'пол':
+    if message.text == '/pol':
         markup1 = types.InlineKeyboardMarkup(row_width=2)
         item1 = types.InlineKeyboardButton('Мужской', callback_data='man')
         item2 = types.InlineKeyboardButton('Женский', callback_data='woman')
@@ -41,7 +54,7 @@ def obrabotka_data(message):
         markup1.add(item1, item2)
         bot.send_message(message.chat.id, 'Какой твой пол?', reply_markup=markup1)
 
-    elif message.text == 'возраст':
+    elif message.text == '/age':
         markup2 = types.InlineKeyboardMarkup(row_width=3)
         item10 = types.InlineKeyboardButton('младше 11', callback_data='<10')
         item11 = types.InlineKeyboardButton('11-18', callback_data='11')
@@ -53,7 +66,7 @@ def obrabotka_data(message):
         markup2.add(item10, item11, item60, item40, item30, item19)
         bot.send_message(message.chat.id, 'Сколько вам лет?', reply_markup=markup2)
 
-    elif message.text == 'рост':
+    elif message.text == '/rost':
         markup3 = types.InlineKeyboardMarkup(row_width=3)
         item139 = types.InlineKeyboardButton('меньше 140', callback_data='130')
         item140 = types.InlineKeyboardButton('140-150', callback_data='140')
@@ -66,7 +79,7 @@ def obrabotka_data(message):
         markup3.add(item139, item190, item140, item180, item170, item160, item150)
         bot.send_message(message.chat.id, 'Какой ваш рост?', reply_markup=markup3)
 
-    elif message.text == 'вес':
+    elif message.text == '/ves':
         markup4 = types.InlineKeyboardMarkup(row_width=3)
         item400 = types.InlineKeyboardButton('меньше 40', callback_data='36')
         item41 = types.InlineKeyboardButton('41-45', callback_data='41')
@@ -83,7 +96,11 @@ def obrabotka_data(message):
 
         markup4.add(item90, item76, item86, item400, item56, item51, item71, item81, item66, item61, item46, item41)
         bot.send_message(message.chat.id, 'Сколько вы весите?', reply_markup=markup4)
-
+    elif message.text == '/ready':
+        markup4 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton('/food')
+        markup4.add(item1)
+        bot.send_message(message.chat.id, 'Все готово!', reply_markup=markup4)
     else:
         bot.send_message(message.chat.id, 'Извините, я так не умею')
 
@@ -123,13 +140,13 @@ def callback_imline(call):
         print(repr(e))
 
 
-@bot.message_handler(commands=['zapis'])
-def zapis(message):
+@bot.message_handler(commands=['food'])
+def food(message):
     global name, tg_id, priem, bluda
     name = message.from_user.first_name
     tg_id = message.from_user.id
     cur = con.cursor()
-    if message.text == '/zapis':
+    if message.text == '/food':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         zavtrak = types.KeyboardButton('завтрак')
         obed = types.KeyboardButton('обед')
