@@ -189,6 +189,8 @@ def callback_imline(call):
             for i in range(12, 21, 2):
                 if call.data == str(i):
                     goal0 = i
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+            bot.delete_message(call.message.chat.id, call.message.message_id - 1)
 
     except Exception as e:
         print(repr(e))
