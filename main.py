@@ -17,6 +17,7 @@ def start(message):
     m = f'Доброго времени суток, <i>{message.from_user.first_name}</i>'
     m1 = 'Для начала вам нужно заполнить свои данные, для этого нажмите кпопку "/input_data".' \
          'После заполнения нажмите кнопку "/food"'
+
     bot.send_message(message.chat.id, m, parse_mode='html')
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     item1 = types.KeyboardButton('/input_data')
@@ -116,6 +117,20 @@ def obrabotka_data(message):
             markup4 = types.ReplyKeyboardMarkup(resize_keyboard=True)
             item1 = types.KeyboardButton('/food')
             markup4.add(item1)
+
+            cur = con.cursor()
+            b = cur.execute(f'''SELECT tg_id FROM users''').fetchall()
+            resss = []
+            for i in b:
+                resss.append(*i)
+            if message.from_user.id not in resss:
+                cur = con.cursor()
+                cur.execute("""INSERT INTO users
+                                        (name, tg_id, kkal_needed) VALUES (?, ?, ?)""",
+                            (message.from_user.first_name, message.from_user.id, int(calorie_calculation())))
+                con.commit()
+                cur.close()
+
             bot.send_message(message.chat.id, 'Все готово!', reply_markup=markup4)
         elif T_or_F() == False:
             bot.send_message(message.chat.id, f'Вы не заполнили все пункты')
@@ -192,17 +207,6 @@ def food(message):
         ujin = types.KeyboardButton('ужин')
         perekus = types.KeyboardButton('перекус')
         markup.add(zavtrak, obed, ujin, perekus)
-
-        b = cur.execute(f'''SELECT tg_id FROM users''').fetchall()
-        resss = []
-        for i in b:
-            resss.append(*i)
-        if message.from_user.id not in resss:
-            cur = con.cursor()
-            cur.execute("""INSERT INTO users
-                        (name, tg_id) VALUES (?, ?)""", (message.from_user.first_name, message.from_user.id))
-            con.commit()
-            cur.close()
 
         bot.send_message(message.chat.id, 'Хорошо, в какой прием пищи?', reply_markup=markup)
         print(message.text)
