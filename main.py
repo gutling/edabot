@@ -123,13 +123,13 @@ def callback_imline(call):
         print(repr(e))
 
 
-@bot.message_handler()
+@bot.message_handler(commands=['zapis'])
 def zapis(message):
     global name, tg_id, priem, bluda
     name = message.from_user.first_name
     tg_id = message.from_user.id
     cur = con.cursor()
-    if message.text == 'записать съеденное':
+    if message.text == '/zapis':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         zavtrak = types.KeyboardButton('завтрак')
         obed = types.KeyboardButton('обед')
@@ -137,10 +137,16 @@ def zapis(message):
         perekus = types.KeyboardButton('перекус')
         markup.add(zavtrak, obed, ujin, perekus)
 
-        cur = con.cursor()
-        cur.execute("""INSERT INTO users
-                    (name, tg_id) VALUES (?, ?)""", (message.from_user.first_name, message.from_user.id))
-        cur.close()
+        b = cur.execute(f'''SELECT tg_id FROM users''').fetchall()
+        resss = []
+        for i in b:
+            resss.append(*i)
+        if message.from_user.id not in resss:
+            cur = con.cursor()
+            cur.execute("""INSERT INTO users
+                        (name, tg_id) VALUES (?, ?)""", (message.from_user.first_name, message.from_user.id))
+            con.commit()
+            cur.close()
 
         bot.send_message(message.chat.id, 'Хорошо, в какой прием пищи?', reply_markup=markup)
         print(message.text)
