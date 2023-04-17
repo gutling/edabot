@@ -55,13 +55,13 @@ def obrabotka_data(message):
 
     elif message.text == 'рост':
         markup3 = types.InlineKeyboardMarkup(row_width=3)
-        item139 = types.InlineKeyboardButton('меньше 140', callback_data='<140')
+        item139 = types.InlineKeyboardButton('меньше 140', callback_data='130')
         item140 = types.InlineKeyboardButton('140-150', callback_data='140')
         item150 = types.InlineKeyboardButton('150-160', callback_data='150')
         item160 = types.InlineKeyboardButton('160-170', callback_data='160')
         item170 = types.InlineKeyboardButton('170-180', callback_data='170')
         item180 = types.InlineKeyboardButton('180-190', callback_data='180')
-        item190 = types.InlineKeyboardButton('больше 190', callback_data='>190')
+        item190 = types.InlineKeyboardButton('больше 190', callback_data='190')
 
         markup3.add(item139, item190, item140, item180, item170, item160, item150)
         bot.send_message(message.chat.id, 'Какой ваш рост?', reply_markup=markup3)
@@ -111,20 +111,9 @@ def callback_imline(call):
             elif call.data == '>60':
                 old = 60
 
-            if call.data == '<140':
-                rost = 130
-            elif call.data == '140':
-                rost = 140
-            elif call.data == '150':
-                rost = 150
-            elif call.data == '160':
-                rost = 160
-            elif call.data == '170':
-                rost = 170
-            elif call.data == '180':
-                rost = 180
-            elif call.data == '>190':
-                rost = 190
+            for i in range(130, 191, 10):
+                if call.data == str(i):
+                    rost = i
 
             for i in range(36, 92, 5):
                 if call.data == str(i):
