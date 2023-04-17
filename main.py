@@ -30,6 +30,7 @@ def start(message):
     markup.add(pol, rost, ves, old)
     bot.send_message(message.chat.id, 'Укажите свои данные', reply_markup=markup)
 
+
 @bot.message_handler()
 def obrabotka_data(message):
     if message.text == 'пол':
@@ -62,13 +63,12 @@ def obrabotka_data(message):
         item180 = types.InlineKeyboardButton('180-190', callback_data='180')
         item190 = types.InlineKeyboardButton('больше 190', callback_data='>190')
 
-
         markup3.add(item139, item190, item140, item180, item170, item160, item150)
         bot.send_message(message.chat.id, 'Какой ваш рост?', reply_markup=markup3)
 
     elif message.text == 'вес':
         markup4 = types.InlineKeyboardMarkup(row_width=3)
-        item400 = types.InlineKeyboardButton('меньше 40', callback_data='<40')
+        item400 = types.InlineKeyboardButton('меньше 40', callback_data='36')
         item41 = types.InlineKeyboardButton('41-45', callback_data='41')
         item46 = types.InlineKeyboardButton('46-50', callback_data='46')
         item51 = types.InlineKeyboardButton('51-55', callback_data='51')
@@ -79,8 +79,7 @@ def obrabotka_data(message):
         item76 = types.InlineKeyboardButton('76-80', callback_data='76')
         item81 = types.InlineKeyboardButton('81-85', callback_data='81')
         item86 = types.InlineKeyboardButton('86-90', callback_data='86')
-        item90 = types.InlineKeyboardButton('больше 90', callback_data='>90')
-
+        item90 = types.InlineKeyboardButton('больше 90', callback_data='91')
 
         markup4.add(item90, item76, item86, item400, item56, item51, item71, item81, item66, item61, item46, item41)
         bot.send_message(message.chat.id, 'Сколько вы весите?', reply_markup=markup4)
@@ -127,30 +126,9 @@ def callback_imline(call):
             elif call.data == '>190':
                 rost = 190
 
-            if call.data == '<40':
-                ves = 39
-            elif call.data == '41':
-                ves = 41
-            elif call.data == '46':
-                ves = 46
-            elif call.data == '51':
-                ves = 51
-            elif call.data == '56':
-                ves = 56
-            elif call.data == '61':
-                ves = 61
-            elif call.data == '66':
-                ves = 66
-            elif call.data == '71':
-                ves = 71
-            elif call.data == '76':
-                ves = 76
-            elif call.data == '81':
-                ves = 81
-            elif call.data == '86':
-                ves = 86
-            elif call.data == '>90':
-                ves = 90
+            for i in range(36, 92, 5):
+                if call.data == str(i):
+                    ves = i
 
     except Exception as e:
         print(repr(e))
