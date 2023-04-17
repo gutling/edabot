@@ -10,13 +10,16 @@ name = ''
 tg_id = 0
 priem = ''
 bluda = []
+vidi = []
+bludo = ''
+kkal_for_that = 0
 
 
 @bot.message_handler(commands=['start'])
 def start(message):
     m = f'Доброго времени суток, <i>{message.from_user.first_name}</i>'
     m1 = 'Для начала вам нужно заполнить свои данные, для этого нажмите кпопку "/input_data".' \
-         'После заполнения нажмите кнопку "/food"'
+         'После заполнения нажмите кнопку "food"'
 
     bot.send_message(message.chat.id, m, parse_mode='html')
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -29,11 +32,15 @@ def start(message):
 
 @bot.message_handler(commands=['input_data'])
 def input_data(message):
-    global bluda
+    global bluda, vidi
     cur = con.cursor()
     a = cur.execute(f'''SELECT name FROM main''').fetchall()
     for i in a:
         bluda.append(*i)
+
+    a = cur.execute(f'''SELECT gotovka FROM main''')
+    for i in a:
+        vidi.append(*i)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     pol = types.KeyboardButton('/pol')
@@ -115,7 +122,7 @@ def obrabotka_data(message):
         if T_or_F() == True:
             bot.send_message(message.chat.id, f'Вам нужно потреблять {int(calorie_calculation())} в день')
             markup4 = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            item1 = types.KeyboardButton('/food')
+            item1 = types.KeyboardButton('food')
             markup4.add(item1)
 
             cur = con.cursor()
@@ -196,13 +203,13 @@ def callback_imline(call):
         print(repr(e))
 
 
-@bot.message_handler(commands=['food'])
+@bot.message_handler()
 def food(message):
-    global name, tg_id, priem, bluda
+    global name, tg_id, priem, bluda, vidi, bludo, kkal_for_that
     name = message.from_user.first_name
     tg_id = message.from_user.id
     cur = con.cursor()
-    if message.text == '/food':
+    if message.text == 'food':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         zavtrak = types.KeyboardButton('завтрак')
         obed = types.KeyboardButton('обед')
@@ -223,9 +230,9 @@ def food(message):
                 priem = 'ujin'
             elif message.text == 'перекус':
                 priem = 'perekus'
-            res = cur.execute(f'''SELECT {priem} FROM users
-                       WHERE users.name = ? AND users.tg_id = ?''', (name, tg_id))
-            bot.send_message(message.chat.id, 'Что вы ели?')
+            # res = cur.execute(f'''SELECT {priem} FROM users
+            #            WHERE users.name = ? AND users.tg_id = ?''', (name, tg_id))
+            bot.send_message(message.chat.id, 'Введите с клавиатуры что вы ели')
             print(bluda)
     elif message.text in bluda:
         print(message.text)
@@ -242,6 +249,21 @@ def food(message):
             bot.send_message(message.chat.id, 'какую именно?', reply_markup=markup)
         elif message.text != 'а':
             bot.send_message(message.chat.id, 'какой именно?', reply_markup=markup)
+        bludo = message.text
+    elif message.text in vidi:
+        kkal_for_that = cur.execute(f'''SELECT kkal FROM main
+                                WHERE name = ? AND gotovka = ?''', (message.text, bludo)).fetchone()
+        bot.send_message(message.chat.id, 'сколько грамм?')
+    elif int(message.text):
+        a = int(message.text)
+        a = a / 100
+        kkal_for_that = kkal_for_that * a
+        print(kkal_for_that)
+        cur = con.cursor()
+        b = cur.execute(f"""INSERT INTO userdata ({priem}) VALUES (?)""",
+                    (message.from_user.first_name, message.from_user.id, int(calorie_calculation())))
+        con.commit()
+        cur.close()
 
 
 bot.polling(none_stop=True)
