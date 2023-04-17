@@ -9,6 +9,7 @@ name = ''
 tg_id = 0
 priem = ''
 bluda = []
+s = 0
 
 
 @bot.message_handler(commands=['start'])
