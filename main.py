@@ -5,7 +5,9 @@ import datetime
 
 bot = telebot.TeleBot('6200404821:AAEiHQQAwR2gLbORrYRT42wWu4kHyCeOrKo')
 
-con = sqlite3.connect('eda.db', check_same_thread=False)
+datetime_str = '04/18/23 22:00:00'
+datetime_start = datetime.datetime.strptime(datetime_str, '%m/%d/%y %H:%M:%S')
+datetime_deltatime = datetime.timedelta(hours=12)
 pol0, ves0, rost0, old0, goal0 = '', 0, 0, 0, 0
 name = ''
 tg_id = 0
@@ -14,7 +16,7 @@ bluda = []
 vidi = []
 bludo = ''
 kkal_for_that = 0
-
+con = sqlite3.connect('eda.db', check_same_thread=False)
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -205,6 +207,9 @@ def callback_imline(call):
 
 @bot.message_handler()
 def food(message):
+    global datetime_start
+    if datetime.datetime.now() - datetime_start >= datetime_deltatime:
+        print(1)
     global name, tg_id, priem, bluda, vidi, bludo, kkal_for_that
     cur = con.cursor()
     a = cur.execute(f'''SELECT name FROM main''').fetchall()
@@ -258,6 +263,8 @@ def food(message):
             bot.send_message(message.chat.id, 'какую именно?', reply_markup=markup)
         elif message.text != 'а':
             bot.send_message(message.chat.id, 'какой именно?', reply_markup=markup)
+        elif message.text[-1] == 'о':
+            bot.send_message(message.chat.id, 'какое именно?', reply_markup=markup)
         bludo = message.text.lower()
         print(bludo)
     elif message.text in vidi:
