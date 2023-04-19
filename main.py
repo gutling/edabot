@@ -1,6 +1,7 @@
 import telebot
 from telebot import types
 import sqlite3
+import datetime
 
 bot = telebot.TeleBot('6200404821:AAEiHQQAwR2gLbORrYRT42wWu4kHyCeOrKo')
 
@@ -271,8 +272,8 @@ def food(message):
         print(type(a))
         kkal_for_that = kkal_for_that * a
         cur = con.cursor()
-        b = cur.execute(f"""INSERT INTO userdata (priem, all_kkal) VALUES (?, ?)""",
-                    (message.from_user.first_name, message.from_user.id, int(calorie_calculation())))
+        b = cur.execute(f"""INSERT INTO userdata (user_id, kkal, priem, date) VALUES (?, ?, ?, ?)""",
+                    (message.from_user.id, kkal_for_that, priem, datetime.datetime.now()))
         con.commit()
         cur.close()
 
