@@ -17,31 +17,30 @@ kkal_for_that = 0
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    cur = con.cursor()
+    a = cur.execute('''SELECT tg_id FROM users''')
+    c = []
     m = f'Доброго времени суток, <i>{message.from_user.first_name}</i>'
-    m1 = 'Для начала вам нужно заполнить свои данные, для этого нажмите кпопку "/input_data".' \
+    for i in a:
+        c.append(*i)
+    if message.from_user.id not in c:
+        m1 = 'Для начала вам нужно заполнить свои данные, для этого нажмите кпопку "/input_data".' \
          'После заполнения нажмите кнопку "food"'
-
-    bot.send_message(message.chat.id, m, parse_mode='html')
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    item1 = types.KeyboardButton('/input_data')
-    # item2 = types.KeyboardButton('/food')
-
-    markup.add(item1)
+        bot.send_message(message.chat.id, m, parse_mode='html')
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+        item1 = types.KeyboardButton('/input_data')
+        markup.add(item1)
+    else:
+        m1 = 'Нажмите кнопку "food" для записи еды'
+        bot.send_message(message.chat.id, m, parse_mode='html')
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+        item2 = types.KeyboardButton('food')
+        markup.add(item2)
     bot.send_message(message.chat.id, m1, parse_mode='html', reply_markup=markup)
 
 
 @bot.message_handler(commands=['input_data'])
 def input_data(message):
-    global bluda, vidi
-    cur = con.cursor()
-    a = cur.execute(f'''SELECT name FROM main''').fetchall()
-    for i in a:
-        bluda.append(*i)
-
-    a = cur.execute(f'''SELECT gotovka FROM main''')
-    for i in a:
-        vidi.append(*i)
-
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     pol = types.KeyboardButton('/pol')
     rost = types.KeyboardButton('/rost')
@@ -206,6 +205,14 @@ def callback_imline(call):
 @bot.message_handler()
 def food(message):
     global name, tg_id, priem, bluda, vidi, bludo, kkal_for_that
+    cur = con.cursor()
+    a = cur.execute(f'''SELECT name FROM main''').fetchall()
+    for i in a:
+        bluda.append(*i)
+
+    a = cur.execute(f'''SELECT gotovka FROM main''')
+    for i in a:
+        vidi.append(*i)
     name = message.from_user.first_name
     tg_id = message.from_user.id
     cur = con.cursor()
@@ -233,15 +240,16 @@ def food(message):
             # res = cur.execute(f'''SELECT {priem} FROM users
             #            WHERE users.name = ? AND users.tg_id = ?''', (name, tg_id))
             bot.send_message(message.chat.id, 'Введите с клавиатуры что вы ели')
-            print(bluda)
-    elif message.text in bluda:
+            print(bluda, 1)
+    elif message.text.lower() in bluda:
         print(message.text)
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         res_2 = cur.execute(f'''SELECT gotovka FROM main
-                                WHERE name = ?''', (message.text,)).fetchall()
+                                WHERE name = ?''', (message.text.lower(),)).fetchall()
         ress = []
         for i in res_2:
             ress.append(*i)
+        print(ress)
         if len(ress) > 1:
             for i in ress:
                 markup.add(types.KeyboardButton(i))
@@ -249,18 +257,21 @@ def food(message):
             bot.send_message(message.chat.id, 'какую именно?', reply_markup=markup)
         elif message.text != 'а':
             bot.send_message(message.chat.id, 'какой именно?', reply_markup=markup)
-        bludo = message.text
+        bludo = message.text.lower()
+        print(bludo)
     elif message.text in vidi:
-        kkal_for_that = cur.execute(f'''SELECT kkal FROM main
-                                WHERE name = ? AND gotovka = ?''', (message.text, bludo)).fetchone()
-        bot.send_message(message.chat.id, 'сколько грамм?')
-    elif int(message.text):
-        a = int(message.text)
-        a = a / 100
-        kkal_for_that = kkal_for_that * a
+        kkal_for_that = int(*cur.execute(f'''SELECT kkal FROM main
+                                WHERE name = ? AND gotovka = ?''', (bludo, message.text.lower())).fetchone())
         print(kkal_for_that)
+        bot.send_message(message.chat.id, 'сколько грамм?')
+    elif message.text.isdigit():
+        a = int(message.text)
+        a = a // 100
+        print(type(kkal_for_that))
+        print(type(a))
+        kkal_for_that = kkal_for_that * a
         cur = con.cursor()
-        b = cur.execute(f"""INSERT INTO userdata ({priem}) VALUES (?)""",
+        b = cur.execute(f"""INSERT INTO userdata (priem, all_kkal) VALUES (?, ?)""",
                     (message.from_user.first_name, message.from_user.id, int(calorie_calculation())))
         con.commit()
         cur.close()
