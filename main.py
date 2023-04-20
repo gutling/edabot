@@ -21,6 +21,8 @@ priem_for_print = ''
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    global tg_id
+    tg_id = message.from_user.id
     cur = con.cursor()
     a = cur.execute('''SELECT tg_id FROM users''')
     c = []
@@ -126,38 +128,115 @@ def input_data(message):
 @bot.message_handler(commands=['profile'])
 def profile(message):
     cur = con.cursor()
-    kk = 'калория'
-    try:
-        zavtrak = cur.execute(f'''SELECT kkal FROM userdata 
-                                WHERE user_id = {message.from_user.id} AND priem = zavtrak''')
-        z = []
-        for i in zavtrak:
-            z.append(int(*i))
-        obed = cur.execute(f'''SELECT kkal FROM userdata 
-                                WHERE user_id = {message.from_user.id} AND priem = obed''')
-        o = []
-        for i in obed:
-            o.append(int(*i))
-        ujin = cur.execute(f'''SELECT kkal FROM userdata 
-                                WHERE user_id = {message.from_user.id} AND priem = ujin''')
-        u = []
-        for i in ujin:
-            u.append(int(*i))
-        perekus = cur.execute(f'''SELECT kkal FROM userdata 
-                                WHERE user_id = {message.from_user.id} AND priem = perekus''')
-        p = []
-        for i in perekus:
-            p.append(int(*i))
+    moo = cur.execute(f'''SELECT tg_id FROM users''').fetchall()
+    mo = []
+    for i in moo:
+        mo.append(*i)
+    if message.from_user.id in mo:
+        cur = con.cursor()
+        word = 'калория'
+        res = morph.parse(word)[0]
+        lst = []
+        allkkal = []
+        z, o, u, p = [], [], [], []
+        zav, obe, uji, per = 'zavtrak', 'obed', 'ujin', 'perekus'
 
-        allkkal = sum([sum(z), sum(o), sum(u), sum(p)])
-        res = morph.parse(kk)[0]
-        bot.send_message(message.chat.id,f'Сегодня вы съели {allkkal} {res.make_agree_with_number(allkkal).kk}.', parse_mode='html')
-        bot.send_message(message.chat.id, f'На завтрак: {sum(z)} {res.make_agree_with_number(sum(z)).kk}.', parse_mode='html')
-        bot.send_message(message.chat.id, f'На обед: {sum(o)} {res.make_agree_with_number(sum(o)).kk}.', parse_mode='html')
-        bot.send_message(message.chat.id, f'На ужин: {sum(u)} {res.make_agree_with_number(sum(u)).kk}.', parse_mode='html')
-        bot.send_message(message.chat.id, f'На перекус: {sum(p)} {res.make_agree_with_number(sum(p)).kk}.', parse_mode='html')
-    except sqlite3.OperationalError:
-        bot.send_message(message.chat.id, f'У вас нет данных.', parse_mode='html')
+        try:
+            zavtrak = cur.execute(f'''SELECT kkal FROM userdata 
+                                    WHERE user_id = {message.from_user.id} AND priem = "{zav}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+            z = []
+            for i in zavtrak:
+                z.append(int(*i))
+            bot.send_message(message.chat.id, f'На завтрак: {sum(z)} {res.make_agree_with_number(sum(z)).word}.',
+                             parse_mode='html')
+            lst.append(1)
+            print('завтрак', zavtrak)
+        except sqlite3.OperationalError:
+            bot.send_message(message.chat.id, f'На завтрак: вы не завтракали.', parse_mode='html')
+            lst.append(0)
+
+        try:
+            obed = cur.execute(f'''SELECT kkal FROM userdata 
+                                        WHERE user_id = {message.from_user.id} AND priem = "{obe}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+            o = []
+            for i in obed:
+                o.append(int(*i))
+            bot.send_message(message.chat.id, f'На обед: {sum(o)} {res.make_agree_with_number(sum(o)).word}.',
+                             parse_mode='html')
+            lst.append(1)
+            print('обед', obed)
+        except sqlite3.OperationalError:
+            bot.send_message(message.chat.id, f'На обед: вы не обедали.', parse_mode='html')
+            lst.append(0)
+
+        try:
+            ujin = cur.execute(f'''SELECT kkal FROM userdata 
+                                        WHERE user_id = {message.from_user.id} AND priem = "{uji}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+            u = []
+            for i in ujin:
+                u.append(int(*i))
+            bot.send_message(message.chat.id, f'На ужин: {sum(u)} {res.make_agree_with_number(sum(u)).word}.',
+                             parse_mode='html')
+            lst.append(1)
+            print('ужин', ujin)
+        except sqlite3.OperationalError:
+            bot.send_message(message.chat.id, f'На ужин: вы не ужинали.', parse_mode='html')
+            lst.append(0)
+
+        try:
+            perekus = cur.execute(f'''SELECT kkal FROM userdata 
+                                        WHERE user_id = {message.from_user.id} AND priem = "{per}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+            p = []
+            for i in perekus:
+                p.append(int(*i))
+            bot.send_message(message.chat.id, f'На перекус: {sum(p)} {res.make_agree_with_number(sum(p)).word}.',
+                             parse_mode='html')
+            lst.append(1)
+            print('перекус', perekus)
+
+        except sqlite3.OperationalError:
+            bot.send_message(message.chat.id, f'На перекус: у вас не было перекуса.', parse_mode='html')
+            lst.append(0)
+
+        for i in range(len(lst)):
+            if lst[i] == 1:
+                if i == 0:
+                    allkkal.append(sum(z))
+                elif i == 1:
+                    allkkal.append(sum(o))
+                elif i == 2:
+                    allkkal.append(sum(u))
+                elif i == 3:
+                    allkkal.append(sum(p))
+
+        print('allkal = ', allkkal)
+
+        if len(allkkal) > 0:
+            bot.send_message(message.chat.id, f'Сегодня вы съели {sum(allkkal)} {res.make_agree_with_number(sum(allkkal)).word}.', parse_mode='html')
+            assa = cur.execute(f'''SELECT kkal_needed FROM users WHERE tg_id = {tg_id}''').fetchone()
+            if int(*assa) < sum(allkkal) and sum(allkkal) - int(*assa) > 150:
+                print('assa =', int(*assa))
+                bot.send_message(message.chat.id,
+                                 f'Это на {sum(allkkal) - int(*assa)} больше чем нужно,'
+                                 f' старайтесь есть меньше, иначе цель не будет достигнута',
+                                 parse_mode='html')
+            elif int(*assa) > sum(allkkal) and int(*assa) - sum(allkkal) > 150:
+                bot.send_message(message.chat.id,
+                                 f'Это на {int(*assa) - sum(allkkal)} меньше чем нужно,'
+                                 f' старайтесь есть больше, иначе цель не будет достигнута',
+                                 parse_mode='html')
+            elif abs(int(*assa) - sum(allkkal)) < 150:
+                bot.send_message(message.chat.id,
+                                 f'Cегодня вы поели в пределах нормы для достижения вашей цели, так держать!',
+                                 parse_mode='html')
+            print(*assa, '---assa---')
+            print(sum(allkkal), '---allkkal---')
+        else:
+            bot.send_message(message.chat.id, f'Сегодня вы не ели(',
+                             parse_mode='html')
+    else:
+        bot.send_message(message.chat.id, f'Сначала заполните свои данные.',
+                         parse_mode='html')
 
 
 @bot.message_handler(commands=['ready'])
@@ -259,9 +338,6 @@ def food(message):
     for i in a:
         bluda.append(*i)
 
-    a = cur.execute(f'''SELECT gotovka FROM main''')
-    for i in a:
-        vidi.append(*i)
     name = message.from_user.first_name
     tg_id = message.from_user.id
     cur = con.cursor()
@@ -291,40 +367,22 @@ def food(message):
             #            WHERE users.name = ? AND users.tg_id = ?''', (name, tg_id))
             bot.send_message(message.chat.id, 'Введите с клавиатуры что вы ели')
             print(bluda, 1)
-    elif message.text.lower() in bluda:
-        print(message.text)
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-        res_2 = cur.execute(f'''SELECT gotovka FROM main
-                                WHERE name = ?''', (message.text.lower(),)).fetchall()
-        ress = []
-        for i in res_2:
-            ress.append(*i)
-        print(ress)
-        if len(ress) != 0:
-            for i in ress:
-                markup.add(types.KeyboardButton(i))
-        if message.text[-1] == 'а':
-            bot.send_message(message.chat.id, 'какая именно?', reply_markup=markup)
-        elif message.text != 'а':
-            bot.send_message(message.chat.id, 'какой именно?', reply_markup=markup)
-        elif message.text[-1] == 'о':
-            bot.send_message(message.chat.id, 'какое именно?', reply_markup=markup)
-        bludo = message.text.lower()
-        print(bludo)
+
     elif message.text in vidi:
         kkal_for_that = int(*cur.execute(f'''SELECT kkal FROM main
                                 WHERE name = ? AND gotovka = ?''', (bludo, message.text.lower())).fetchone())
         print(kkal_for_that)
         bot.send_message(message.chat.id, 'сколько грамм?')
+
     elif message.text.isdigit():
         a = int(message.text)
-        a = a // 100
-        print(type(kkal_for_that))
-        print(type(a))
-        kkal_for_that = kkal_for_that * a
+        a = a / 100
+        print(kkal_for_that)
+        print(a)
+        kkal_for_that = int(kkal_for_that * a)
         cur = con.cursor()
-        b = cur.execute(f"""INSERT INTO userdata (user_id, kkal, priem, date) VALUES (?, ?, ?, ?)""",
-                    (message.from_user.id, kkal_for_that, priem, datetime.datetime.now()))
+        cur.execute(f"""INSERT INTO userdata (user_id, kkal, priem, date) VALUES (?, ?, ?, ?)""",
+                    (message.from_user.id, kkal_for_that, priem, datetime.datetime.now().date()))
         con.commit()
         cur.close()
         bot.send_message(message.chat.id, f'Вы съели {kkal_for_that} ккал')
@@ -335,6 +393,31 @@ def food(message):
         markup.add(types.KeyboardButton('/profile'))
         markup.add(types.KeyboardButton(f'{priem_for_print}'))
         bot.send_message(message.chat.id, f'Для продолжения записи продуктув в этот прием пищи нажмите {priem_for_print}', reply_markup=markup)
+
+    if str(type(morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}))) != "<class 'NoneType'>":
+        print(type(morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'})))
+        if morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}).word in bluda:
+            print('aaaaaaaaaaaaaaaaaaaa', morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}).word)
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+            res_2 = cur.execute(f'''SELECT gotovka FROM main
+                                    WHERE name = ?''', (morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}).word,)).fetchall()
+            ress = []
+            for i in res_2:
+                ress.append(*i)
+            print(ress)
+            if len(ress) != 0:
+                for i in ress:
+                    markup.add(types.KeyboardButton(i))
+            if message.text[-1] == 'а':
+                bot.send_message(message.chat.id, 'какая именно?', reply_markup=markup)
+            elif message.text != 'а':
+                bot.send_message(message.chat.id, 'какой именно?', reply_markup=markup)
+            elif message.text[-1] == 'о':
+                bot.send_message(message.chat.id, 'какое именно?', reply_markup=markup)
+            bludo = morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}).word
+            vidi = ress
+            print(vidi)
+            print(bludo)
 
 
 if __name__ == '__main__':
