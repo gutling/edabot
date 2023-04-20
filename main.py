@@ -1,13 +1,9 @@
 import telebot
 from telebot import types
 import sqlite3
-import datetime
 
 bot = telebot.TeleBot('6200404821:AAEiHQQAwR2gLbORrYRT42wWu4kHyCeOrKo')
 
-datetime_str = '04/18/23 22:00:00'
-datetime_start = datetime.datetime.strptime(datetime_str, '%m/%d/%y %H:%M:%S')
-datetime_deltatime = datetime.timedelta(hours=12)
 pol0, ves0, rost0, old0, goal0 = '', 0, 0, 0, 0
 name = ''
 tg_id = 0
@@ -17,6 +13,7 @@ vidi = []
 bludo = ''
 kkal_for_that = 0
 con = sqlite3.connect('eda.db', check_same_thread=False)
+priem_for_print = ''
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -207,10 +204,7 @@ def callback_imline(call):
 
 @bot.message_handler()
 def food(message):
-    global datetime_start
-    if datetime.datetime.now() - datetime_start >= datetime_deltatime:
-        print(1)
-    global name, tg_id, priem, bluda, vidi, bludo, kkal_for_that
+    global name, tg_id, priem, bluda, vidi, bludo, kkal_for_that, priem_for_print
     cur = con.cursor()
     a = cur.execute(f'''SELECT name FROM main''').fetchall()
     for i in a:
@@ -230,10 +224,11 @@ def food(message):
         perekus = types.KeyboardButton('перекус')
         markup.add(zavtrak, obed, ujin, perekus)
 
-        bot.send_message(message.chat.id, 'Хорошо, в какой прием пищи?', reply_markup=markup)
+        bot.send_message(message.chat.id, 'Хорошо, в какой прием пищи вы хотите записать съеденное?', reply_markup=markup)
         print(message.text)
     elif message.text in ['завтрак', 'обед', 'ужин', 'перекус', 'все']:
         print(message.text)
+        priem_for_print = message.text
         if message.text != 'все':
             if message.text == 'завтрак':
                 priem = 'zavtrak'
@@ -245,7 +240,7 @@ def food(message):
                 priem = 'perekus'
             # res = cur.execute(f'''SELECT {priem} FROM users
             #            WHERE users.name = ? AND users.tg_id = ?''', (name, tg_id))
-            bot.send_message(message.chat.id, 'Введите с клавиатуры что вы ели')
+            bot.send_message(message.chat.id, 'Введите с клавиатуры что вы ели(в иминительном падеже)')
             print(bluda, 1)
     elif message.text.lower() in bluda:
         print(message.text)
@@ -256,11 +251,11 @@ def food(message):
         for i in res_2:
             ress.append(*i)
         print(ress)
-        if len(ress) > 1:
+        if len(ress) != 0:
             for i in ress:
                 markup.add(types.KeyboardButton(i))
         if message.text[-1] == 'а':
-            bot.send_message(message.chat.id, 'какую именно?', reply_markup=markup)
+            bot.send_message(message.chat.id, 'какая именно?', reply_markup=markup)
         elif message.text != 'а':
             bot.send_message(message.chat.id, 'какой именно?', reply_markup=markup)
         elif message.text[-1] == 'о':
@@ -283,6 +278,13 @@ def food(message):
                     (message.from_user.id, kkal_for_that, priem, datetime.datetime.now()))
         con.commit()
         cur.close()
+        bot.send_message(message.chat.id, f'вы съели {kkal_for_that} ккал')
+        bot.send_message(message.chat.id, f'Для записи продуктов в другой прием пищи нажмите food')
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+        markup.add(types.KeyboardButton('food'))
+        markup.add(types.KeyboardButton(f'{priem_for_print}'))
+        bot.send_message(message.chat.id, f'Для продолжения записи продуктув в этот прием пищи нажмите {priem_for_print}', reply_markup=markup)
 
 
-bot.polling(none_stop=True)
+if __name__ == '__main__':
+    bot.polling(none_stop=True)
