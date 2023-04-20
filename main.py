@@ -5,7 +5,7 @@ import sqlite3
 bot = telebot.TeleBot('6200404821:AAEiHQQAwR2gLbORrYRT42wWu4kHyCeOrKo')
 
 pol0, ves0, rost0, old0, goal0 = '', 0, 0, 0, 0
-name = ''
+name, fit0 = '', ''
 tg_id = 0
 priem = ''
 bluda = []
@@ -53,7 +53,7 @@ def input_data(message):
     bot.send_message(message.chat.id, 'Укажите свои данные', reply_markup=markup)
 
 
-@bot.message_handler(commands=['pol', 'rost', 'ves', 'age', 'goal', 'ready'])
+@bot.message_handler(commands=['pol', 'rost', 'ves', 'age', 'goal', 'ready', 'fit'])
 def obrabotka_data(message):
     if message.text == '/pol':
         markup1 = types.InlineKeyboardMarkup(row_width=2)
@@ -72,7 +72,7 @@ def obrabotka_data(message):
         item40 = types.InlineKeyboardButton('40-59', callback_data='40')
         item60 = types.InlineKeyboardButton('старше 60', callback_data='>60')
 
-        markup2.add(item10, item11, item60, item40, item30, item19)
+        markup2.add(item10, item11, item19, item30, item40, item60)
         bot.send_message(message.chat.id, 'Сколько вам лет?', reply_markup=markup2)
 
     elif message.text == '/rost':
@@ -85,7 +85,7 @@ def obrabotka_data(message):
         item180 = types.InlineKeyboardButton('180-190', callback_data='180')
         item190 = types.InlineKeyboardButton('больше 190', callback_data='190')
 
-        markup3.add(item139, item190, item140, item180, item170, item160, item150)
+        markup3.add(item139, item140, item150, item160, item170, item180, item190)
         bot.send_message(message.chat.id, 'Какой ваш рост?', reply_markup=markup3)
 
     elif message.text == '/ves':
@@ -103,7 +103,7 @@ def obrabotka_data(message):
         item86 = types.InlineKeyboardButton('86-90', callback_data='86')
         item90 = types.InlineKeyboardButton('больше 90', callback_data='91')
 
-        markup4.add(item90, item76, item86, item400, item56, item51, item71, item81, item66, item61, item46, item41)
+        markup4.add(item400, item41, item46, item51, item56, item61, item66, item71, item76, item81, item86, item90)
         bot.send_message(message.chat.id, 'Сколько вы весите?', reply_markup=markup4)
 
     elif message.text == '/goal':
@@ -115,7 +115,15 @@ def obrabotka_data(message):
         item020 = types.InlineKeyboardButton('2 раза в день', callback_data='20')
 
         markup5.add(item012, item014, item016, item018, item020)
-        bot.send_message(message.chat.id, 'Какой ваш рост?', reply_markup=markup5)
+        bot.send_message(message.chat.id, 'Сколько у вас тренировок в неделю?', reply_markup=markup5)
+
+    elif message.text == '/fit':
+        markup6 = types.InlineKeyboardMarkup(row_width=2)
+        item1 = types.InlineKeyboardButton('похудеть', callback_data='slim')
+        item2 = types.InlineKeyboardButton('набрать массу', callback_data='xxxl')
+
+        markup6.add(item1, item2)
+        bot.send_message(message.chat.id, 'Ваша цель?', reply_markup=markup6)
 
     elif message.text == '/ready':
         if T_or_F() == True:
@@ -146,7 +154,7 @@ def obrabotka_data(message):
 
 
 def T_or_F():
-    if pol0 != '' and ves0 != 0 and rost0 != 0 and old0 != 0 and goal0 != 0:
+    if pol0 != '' and ves0 != 0 and rost0 != 0 and old0 != 0 and goal0 != 0 and fit0 == '':
         return True
     else:
         return False
@@ -155,9 +163,13 @@ def T_or_F():
 def calorie_calculation():
     if pol0 == 'man':
         ans = (66 + (13.7 * ves0) + (5 * rost0) - (6.76 * old0)) * goal0 / 10
+        if fit0 == 'slim':
+            ans -= 400
         return ans
     elif pol0 == 'woman':
         ans = (655 + (9.6 * ves0) + (1.8 * rost0) - (4.7 * old0)) * goal0 / 10
+        if fit0 == 'slim':
+            ans -= 400
         return ans
 
 
