@@ -408,12 +408,14 @@ def food(message):
             if len(ress) != 0:
                 for i in ress:
                     markup.add(types.KeyboardButton(i))
-            if message.text[-1] == 'а':
+            if morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}).word[-1] == 'а':
                 bot.send_message(message.chat.id, 'какая именно?', reply_markup=markup)
-            elif message.text != 'а':
-                bot.send_message(message.chat.id, 'какой именно?', reply_markup=markup)
-            elif message.text[-1] == 'о':
+
+            elif morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}).word[-1] == 'о' or morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}).word[-1] == 'e':
                 bot.send_message(message.chat.id, 'какое именно?', reply_markup=markup)
+
+            elif morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}).word[-1] != 'а':
+                bot.send_message(message.chat.id, 'какой именно?', reply_markup=markup)
             bludo = morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}).word
             vidi = ress
             print(vidi)
