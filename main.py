@@ -289,7 +289,7 @@ def food(message):
                 priem = 'perekus'
             # res = cur.execute(f'''SELECT {priem} FROM users
             #            WHERE users.name = ? AND users.tg_id = ?''', (name, tg_id))
-            bot.send_message(message.chat.id, 'Введите с клавиатуры что вы ели(в иминительном падеже)')
+            bot.send_message(message.chat.id, 'Введите с клавиатуры что вы ели')
             print(bluda, 1)
     elif message.text.lower() in bluda:
         print(message.text)
