@@ -18,6 +18,7 @@ kkal_for_that = 0
 con = sqlite3.connect('eda.db', check_same_thread=False)
 priem_for_print = ''
 
+
 @bot.message_handler(commands=['start'])
 def start(message):
     cur = con.cursor()
@@ -44,20 +45,86 @@ def start(message):
 
 @bot.message_handler(commands=['input_data'])
 def input_data(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    pol = types.KeyboardButton('/pol')
-    rost = types.KeyboardButton('/rost')
-    ves = types.KeyboardButton('/ves')
-    old = types.KeyboardButton('/age')
-    goal = types.KeyboardButton('/goal')
+    # определение пола
+    markup1 = types.InlineKeyboardMarkup(row_width=2)
+    item1 = types.InlineKeyboardButton('Мужской', callback_data='man')
+    item2 = types.InlineKeyboardButton('Женский', callback_data='woman')
+
+    markup1.add(item1, item2)
+    bot.send_message(message.chat.id, 'Какой твой пол?', reply_markup=markup1)
+
+    # определение возраста
+    markup2 = types.InlineKeyboardMarkup(row_width=3)
+    item10 = types.InlineKeyboardButton('младше 11', callback_data='<10')
+    item11 = types.InlineKeyboardButton('11-18', callback_data='11')
+    item19 = types.InlineKeyboardButton('19-29', callback_data='19')
+    item30 = types.InlineKeyboardButton('30-39', callback_data='30')
+    item40 = types.InlineKeyboardButton('40-59', callback_data='40')
+    item60 = types.InlineKeyboardButton('старше 60', callback_data='>60')
+
+    markup2.add(item10, item11, item19, item30, item40, item60)
+    bot.send_message(message.chat.id, 'Сколько вам лет?', reply_markup=markup2)
+
+    # определение роста
+    markup3 = types.InlineKeyboardMarkup(row_width=3)
+    item139 = types.InlineKeyboardButton('меньше 140', callback_data='130')
+    item140 = types.InlineKeyboardButton('140-150', callback_data='140')
+    item150 = types.InlineKeyboardButton('150-160', callback_data='150')
+    item160 = types.InlineKeyboardButton('160-170', callback_data='160')
+    item170 = types.InlineKeyboardButton('170-180', callback_data='170')
+    item180 = types.InlineKeyboardButton('180-190', callback_data='180')
+    item190 = types.InlineKeyboardButton('больше 190', callback_data='190')
+
+    markup3.add(item139, item140, item150, item160, item170, item180, item190)
+    bot.send_message(message.chat.id, 'Какой ваш рост?', reply_markup=markup3)
+
+    # определение веса
+    markup4 = types.InlineKeyboardMarkup(row_width=3)
+    item400 = types.InlineKeyboardButton('меньше 40', callback_data='36')
+    item41 = types.InlineKeyboardButton('41-45', callback_data='41')
+    item46 = types.InlineKeyboardButton('46-50', callback_data='46')
+    item51 = types.InlineKeyboardButton('51-55', callback_data='51')
+    item56 = types.InlineKeyboardButton('56-60', callback_data='56')
+    item61 = types.InlineKeyboardButton('61-65', callback_data='61')
+    item66 = types.InlineKeyboardButton('66-70', callback_data='66')
+    item71 = types.InlineKeyboardButton('71-75', callback_data='71')
+    item76 = types.InlineKeyboardButton('76-80', callback_data='76')
+    item81 = types.InlineKeyboardButton('81-85', callback_data='81')
+    item86 = types.InlineKeyboardButton('86-90', callback_data='86')
+    item90 = types.InlineKeyboardButton('больше 90', callback_data='91')
+
+    markup4.add(item400, item41, item46, item51, item56, item61, item66, item71, item76, item81, item86, item90)
+    bot.send_message(message.chat.id, 'Сколько вы весите?', reply_markup=markup4)
+
+    # количество тренировок
+    markup5 = types.InlineKeyboardMarkup(row_width=2)
+    item012 = types.InlineKeyboardButton('0', callback_data='12')
+    item014 = types.InlineKeyboardButton('1–3', callback_data='14')
+    item016 = types.InlineKeyboardButton('3–5', callback_data='16')
+    item018 = types.InlineKeyboardButton('каждый день', callback_data='18')
+    item020 = types.InlineKeyboardButton('2 раза в день', callback_data='20')
+
+    markup5.add(item012, item014, item016, item018, item020)
+    bot.send_message(message.chat.id, 'Сколько у вас тренировок в неделю?', reply_markup=markup5)
+
+    # цель
+    markup6 = types.InlineKeyboardMarkup(row_width=2)
+    item1 = types.InlineKeyboardButton('похудеть', callback_data='slim')
+    item2 = types.InlineKeyboardButton('набрать массу', callback_data='xxxl')
+
+    markup6.add(item1, item2)
+    bot.send_message(message.chat.id, 'Ваша цель?', reply_markup=markup6)
+
+    # готовность
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     end = types.KeyboardButton('/ready')
 
-    markup.add(pol, rost, ves, old, goal, end)
-    bot.send_message(message.chat.id, 'Укажите свои данные', reply_markup=markup)
+    markup.add(end)
+    bot.send_message(message.chat.id, 'Если вы все заполнили, нажмите /ready', reply_markup=markup)
 
 
 @bot.message_handler(commands=['profile'])
-def input_data(message):
+def profile(message):
     cur = con.cursor()
     kk = 'калория'
     try:
@@ -90,82 +157,12 @@ def input_data(message):
         bot.send_message(message.chat.id, f'На ужин: {sum(u)} {res.make_agree_with_number(sum(u)).kk}.', parse_mode='html')
         bot.send_message(message.chat.id, f'На перекус: {sum(p)} {res.make_agree_with_number(sum(p)).kk}.', parse_mode='html')
     except sqlite3.OperationalError:
-        bot.send_message(message.chat.id, f'У вас нет данных.',parse_mode='html')
+        bot.send_message(message.chat.id, f'У вас нет данных.', parse_mode='html')
 
 
-@bot.message_handler(commands=['pol', 'rost', 'ves', 'age', 'goal', 'ready', 'fit'])
+@bot.message_handler(commands=['ready'])
 def obrabotka_data(message):
-    if message.text == '/pol':
-        markup1 = types.InlineKeyboardMarkup(row_width=2)
-        item1 = types.InlineKeyboardButton('Мужской', callback_data='man')
-        item2 = types.InlineKeyboardButton('Женский', callback_data='woman')
-
-        markup1.add(item1, item2)
-        bot.send_message(message.chat.id, 'Какой твой пол?', reply_markup=markup1)
-
-    elif message.text == '/age':
-        markup2 = types.InlineKeyboardMarkup(row_width=3)
-        item10 = types.InlineKeyboardButton('младше 11', callback_data='<10')
-        item11 = types.InlineKeyboardButton('11-18', callback_data='11')
-        item19 = types.InlineKeyboardButton('19-29', callback_data='19')
-        item30 = types.InlineKeyboardButton('30-39', callback_data='30')
-        item40 = types.InlineKeyboardButton('40-59', callback_data='40')
-        item60 = types.InlineKeyboardButton('старше 60', callback_data='>60')
-
-        markup2.add(item10, item11, item19, item30, item40, item60)
-        bot.send_message(message.chat.id, 'Сколько вам лет?', reply_markup=markup2)
-
-    elif message.text == '/rost':
-        markup3 = types.InlineKeyboardMarkup(row_width=3)
-        item139 = types.InlineKeyboardButton('меньше 140', callback_data='130')
-        item140 = types.InlineKeyboardButton('140-150', callback_data='140')
-        item150 = types.InlineKeyboardButton('150-160', callback_data='150')
-        item160 = types.InlineKeyboardButton('160-170', callback_data='160')
-        item170 = types.InlineKeyboardButton('170-180', callback_data='170')
-        item180 = types.InlineKeyboardButton('180-190', callback_data='180')
-        item190 = types.InlineKeyboardButton('больше 190', callback_data='190')
-
-        markup3.add(item139, item140, item150, item160, item170, item180, item190)
-        bot.send_message(message.chat.id, 'Какой ваш рост?', reply_markup=markup3)
-
-    elif message.text == '/ves':
-        markup4 = types.InlineKeyboardMarkup(row_width=3)
-        item400 = types.InlineKeyboardButton('меньше 40', callback_data='36')
-        item41 = types.InlineKeyboardButton('41-45', callback_data='41')
-        item46 = types.InlineKeyboardButton('46-50', callback_data='46')
-        item51 = types.InlineKeyboardButton('51-55', callback_data='51')
-        item56 = types.InlineKeyboardButton('56-60', callback_data='56')
-        item61 = types.InlineKeyboardButton('61-65', callback_data='61')
-        item66 = types.InlineKeyboardButton('66-70', callback_data='66')
-        item71 = types.InlineKeyboardButton('71-75', callback_data='71')
-        item76 = types.InlineKeyboardButton('76-80', callback_data='76')
-        item81 = types.InlineKeyboardButton('81-85', callback_data='81')
-        item86 = types.InlineKeyboardButton('86-90', callback_data='86')
-        item90 = types.InlineKeyboardButton('больше 90', callback_data='91')
-
-        markup4.add(item400, item41, item46, item51, item56, item61, item66, item71, item76, item81, item86, item90)
-        bot.send_message(message.chat.id, 'Сколько вы весите?', reply_markup=markup4)
-
-    elif message.text == '/goal':
-        markup5 = types.InlineKeyboardMarkup(row_width=2)
-        item012 = types.InlineKeyboardButton('0', callback_data='12')
-        item014 = types.InlineKeyboardButton('1–3', callback_data='14')
-        item016 = types.InlineKeyboardButton('3–5', callback_data='16')
-        item018 = types.InlineKeyboardButton('каждый день', callback_data='18')
-        item020 = types.InlineKeyboardButton('2 раза в день', callback_data='20')
-
-        markup5.add(item012, item014, item016, item018, item020)
-        bot.send_message(message.chat.id, 'Сколько у вас тренировок в неделю?', reply_markup=markup5)
-
-    elif message.text == '/fit':
-        markup6 = types.InlineKeyboardMarkup(row_width=2)
-        item1 = types.InlineKeyboardButton('похудеть', callback_data='slim')
-        item2 = types.InlineKeyboardButton('набрать массу', callback_data='xxxl')
-
-        markup6.add(item1, item2)
-        bot.send_message(message.chat.id, 'Ваша цель?', reply_markup=markup6)
-
-    elif message.text == '/ready':
+    if message.text == '/ready':
         if T_or_F() == True:
             bot.send_message(message.chat.id, f'Вам нужно потреблять {int(calorie_calculation())} в день')
             markup4 = types.ReplyKeyboardMarkup(resize_keyboard=True)
