@@ -26,7 +26,7 @@ def start(message):
         c.append(*i)
     if message.from_user.id not in c:
         m1 = 'Для начала вам нужно заполнить свои данные, для этого нажмите кпопку "/input_data".' \
-         'После заполнения нажмите кнопку "food"'
+         'После заполнения нажмите кнопку "food". Так команда "/profile" откроет ваш профиль'
         bot.send_message(message.chat.id, m, parse_mode='html')
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         item1 = types.KeyboardButton('/input_data')
@@ -52,6 +52,12 @@ def input_data(message):
 
     markup.add(pol, rost, ves, old, goal, end)
     bot.send_message(message.chat.id, 'Укажите свои данные', reply_markup=markup)
+
+
+@bot.message_handler(commands=['profile'])
+def input_data(message):
+    m = 'Сегодня вы съели ... калорий. На завтрак вы ели...'
+    bot.send_message(message.chat.id, m, parse_mode='html')
 
 
 @bot.message_handler(commands=['pol', 'rost', 'ves', 'age', 'goal', 'ready', 'fit'])
