@@ -2,9 +2,11 @@ import telebot
 from telebot import types
 import sqlite3
 import datetime
+import pymorphy2
 
 bot = telebot.TeleBot('6200404821:AAEiHQQAwR2gLbORrYRT42wWu4kHyCeOrKo')
 
+morph = pymorphy2.MorphAnalyzer()
 pol0, ves0, rost0, old0, goal0 = '', 0, 0, 0, 0
 name, fit0 = '', ''
 tg_id = 0
@@ -56,8 +58,39 @@ def input_data(message):
 
 @bot.message_handler(commands=['profile'])
 def input_data(message):
-    m = 'Сегодня вы съели ... калорий. На завтрак вы ели...'
-    bot.send_message(message.chat.id, m, parse_mode='html')
+    cur = con.cursor()
+    kk = 'калория'
+    try:
+        zavtrak = cur.execute(f'''SELECT kkal FROM userdata 
+                                WHERE user_id = {message.from_user.id} AND priem = zavtrak''')
+        z = []
+        for i in zavtrak:
+            z.append(int(*i))
+        obed = cur.execute(f'''SELECT kkal FROM userdata 
+                                WHERE user_id = {message.from_user.id} AND priem = obed''')
+        o = []
+        for i in obed:
+            o.append(int(*i))
+        ujin = cur.execute(f'''SELECT kkal FROM userdata 
+                                WHERE user_id = {message.from_user.id} AND priem = ujin''')
+        u = []
+        for i in ujin:
+            u.append(int(*i))
+        perekus = cur.execute(f'''SELECT kkal FROM userdata 
+                                WHERE user_id = {message.from_user.id} AND priem = perekus''')
+        p = []
+        for i in perekus:
+            p.append(int(*i))
+
+        allkkal = sum([sum(z), sum(o), sum(u), sum(p)])
+        res = morph.parse(kk)[0]
+        bot.send_message(message.chat.id,f'Сегодня вы съели {allkkal} {res.make_agree_with_number(allkkal).kk}.', parse_mode='html')
+        bot.send_message(message.chat.id, f'На завтрак: {sum(z)} {res.make_agree_with_number(sum(z)).kk}.', parse_mode='html')
+        bot.send_message(message.chat.id, f'На обед: {sum(o)} {res.make_agree_with_number(sum(o)).kk}.', parse_mode='html')
+        bot.send_message(message.chat.id, f'На ужин: {sum(u)} {res.make_agree_with_number(sum(u)).kk}.', parse_mode='html')
+        bot.send_message(message.chat.id, f'На перекус: {sum(p)} {res.make_agree_with_number(sum(p)).kk}.', parse_mode='html')
+    except sqlite3.OperationalError:
+        bot.send_message(message.chat.id, f'У вас нет данных.',parse_mode='html')
 
 
 @bot.message_handler(commands=['pol', 'rost', 'ves', 'age', 'goal', 'ready', 'fit'])
@@ -297,10 +330,12 @@ def food(message):
                     (message.from_user.id, kkal_for_that, priem, datetime.datetime.now()))
         con.commit()
         cur.close()
-        bot.send_message(message.chat.id, f'вы съели {kkal_for_that} ккал')
+        bot.send_message(message.chat.id, f'Вы съели {kkal_for_that} ккал')
         bot.send_message(message.chat.id, f'Для записи продуктов в другой прием пищи нажмите food')
+        bot.send_message(message.chat.id, f'Для просмотра профиля нажмите /profile')
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         markup.add(types.KeyboardButton('food'))
+        markup.add(types.KeyboardButton('/profile'))
         markup.add(types.KeyboardButton(f'{priem_for_print}'))
         bot.send_message(message.chat.id, f'Для продолжения записи продуктув в этот прием пищи нажмите {priem_for_print}', reply_markup=markup)
 
