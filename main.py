@@ -332,7 +332,7 @@ def callback_imline(call):
 
 @bot.message_handler()
 def food(message):
-    global name, tg_id, priem, bluda, vidi, bludo, kkal_for_that, priem_for_print
+    global name, tg_id, priem, bluda, vidi, bludo, kkal_for_that, priem_for_print, proteins_for_that, fats_for_that, carbohydrates_for_that
     cur = con.cursor()
     a = cur.execute(f'''SELECT name FROM main''').fetchall()
     for i in a:
@@ -371,6 +371,12 @@ def food(message):
     elif message.text in vidi:
         kkal_for_that = int(*cur.execute(f'''SELECT kkal FROM main
                                 WHERE name = ? AND gotovka = ?''', (bludo, message.text.lower())).fetchone())
+        proteins_for_that = int(*cur.execute(f'''SELECT proteins FROM main
+                                WHERE name = ? AND gotovka = ?''', (bludo, message.text.lower())).fetchone())
+        fats_for_that = int(*cur.execute(f'''SELECT fats FROM main
+                                WHERE name = ? AND gotovka = ?''', (bludo, message.text.lower())).fetchone())
+        carbohydrates_for_that = int(*cur.execute(f'''SELECT carbohydrates FROM main
+                                WHERE name = ? AND gotovka = ?''', (bludo, message.text.lower())).fetchone())
         print(kkal_for_that)
         bot.send_message(message.chat.id, 'сколько грамм?')
 
@@ -385,7 +391,8 @@ def food(message):
                     (message.from_user.id, kkal_for_that, priem, datetime.datetime.now().date()))
         con.commit()
         cur.close()
-        bot.send_message(message.chat.id, f'Вы съели {kkal_for_that} ккал')
+        bot.send_message(message.chat.id, f'Вы съели {kkal_for_that} ккал, {proteins_for_that} белков, '
+                                          f'{fats_for_that} жиров и {carbohydrates_for_that} углеводов')
         bot.send_message(message.chat.id, f'Для записи продуктов в другой прием пищи нажмите food')
         bot.send_message(message.chat.id, f'Для просмотра профиля нажмите /profile')
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
