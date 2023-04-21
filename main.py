@@ -386,9 +386,12 @@ def food(message):
         print(kkal_for_that)
         print(a)
         kkal_for_that = int(kkal_for_that * a)
+        proteins_for_that = int(proteins_for_that * a)
+        fats_for_that = int(fats_for_that * a)
+        carbohydrates_for_that = int(carbohydrates_for_that * a)
         cur = con.cursor()
-        cur.execute(f"""INSERT INTO userdata (user_id, kkal, priem, date) VALUES (?, ?, ?, ?)""",
-                    (message.from_user.id, kkal_for_that, priem, datetime.datetime.now().date()))
+        cur.execute(f"""INSERT INTO userdata (user_id, kkal, priem, date, proteins, fats, carbohydrates) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                    (message.from_user.id, kkal_for_that, priem, datetime.datetime.now().date(), proteins_for_that, fats_for_that, carbohydrates_for_that))
         con.commit()
         cur.close()
         bot.send_message(message.chat.id, f'Вы съели {kkal_for_that} ккал, {proteins_for_that} белков, '
