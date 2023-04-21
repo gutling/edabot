@@ -127,6 +127,8 @@ def input_data(message):
 
 @bot.message_handler(commands=['profile'])
 def profile(message):
+    global tg_id
+    tg_id = message.from_user.id
     cur = con.cursor()
     moo = cur.execute(f'''SELECT tg_id FROM users''').fetchall()
     mo = []
@@ -257,7 +259,6 @@ def profile(message):
             p_c = []
             for i in p_carbohydrates:
                 p_c.append(int(*i))
-            u_nut = [sum(p_p), sum(p_fats), sum(p_carbohydrates)]
             p = []
             for i in perekus:
                 p.append(int(*i))
@@ -268,6 +269,7 @@ def profile(message):
             all_f.append(sum(p_f))
             all_c.append(sum(p_c))
             print('перекус', perekus)
+
 
         except sqlite3.OperationalError:
             bot.send_message(message.chat.id, f'На перекус: у вас не было перекуса.', parse_mode='html')
@@ -285,54 +287,94 @@ def profile(message):
                     allkkal.append(sum(p))
 
         print('allkal = ', allkkal)
+        print()
 
         if len(allkkal) > 0:
-            alll = sum([sum(all_p), sum(all_c), sum(all_f)])
-            bot.send_message(message.chat.id, f'Сегодня вы съели {sum(allkkal)} {res.make_agree_with_number(sum(allkkal)).word}.', parse_mode='html')
             assa = cur.execute(f'''SELECT kkal_needed FROM users WHERE tg_id = {tg_id}''').fetchone()
-            if int(*assa) < sum(allkkal) and sum(allkkal) - int(*assa) > 150:
-                print('assa =', int(*assa))
-                bot.send_message(message.chat.id,
-                                 f'Это на {sum(allkkal) - int(*assa)} больше чем нужно,'
-                                 f' старайтесь есть меньше, иначе цель не будет достигнута',
-                                 parse_mode='html')
-                bot.send_message(message.chat.id, f'БЖУ: {sum(all_p)} {sum(all_f)} {sum(all_c)}.', parse_mode='html')
-                if sum(all_p) > alll and sum(all_p) - alll * 0.3 > alll * 0.03:
+            print(tg_id)
+            if type(assa) != "<class 'NoneType'>":
+                alll = sum([sum(all_p), sum(all_c), sum(all_f)])
+                print('111')
+                bot.send_message(message.chat.id, f'Сегодня вы съели {sum(allkkal)} {res.make_agree_with_number(sum(allkkal)).word}.', parse_mode='html')
+                print(assa)
+                if int(*assa) < sum(allkkal) and sum(allkkal) - int(*assa) > 150:
+                    print('all_p = ', all_p)
+                    print('all_f = ', all_p)
+                    print('all_c = ', all_p)
+                    print('assa =', int(*assa))
+                    print('alll = ', alll)
+                    print(alll)
+                    print()
                     bot.send_message(message.chat.id,
-                                     f'Cегодня вы съели на {sum(all_p) - alll * 0.3} Б. больше чем нужно.',
+                                     f'Это на {sum(allkkal) - int(*assa)} больше чем нужно,'
+                                     f' старайтесь есть меньше, иначе цель не будет достигнута',
                                      parse_mode='html')
-                elif sum(all_p) < alll and alll * 0.3 - sum(all_p) > alll * 0.03:
-                    bot.send_message(message.chat.id,
-                                     f'Cегодня вы съели на {alll * 0.3 - sum(all_p)} Б. больше чем нужно.',
+                    bot.send_message(message.chat.id, f'БЖУ: {sum(all_p)} {sum(all_f)} {sum(all_c)}.', parse_mode='html')
+                    if sum(all_p) > alll and sum(all_p) - alll * 0.3 > alll * 0.03:
+                        bot.send_message(message.chat.id,
+                                         f'Cегодня вы съели на {sum(all_p) - alll * 0.3} Б. больше чем нужно.',
+                                         parse_mode='html')
+                    if sum(all_p) < alll and alll * 0.3 - sum(all_p) > alll * 0.03:
+                        bot.send_message(message.chat.id,
+                                         f'Cегодня вы съели на {alll * 0.3 - sum(all_p)} Б. больше чем нужно.',
+                                         parse_mode='html')
+                    if sum(all_f) > alll and sum(all_f) - alll * 0.2 > alll * 0.03:
+                        bot.send_message(message.chat.id,
+                                         f'Cегодня вы съели на {sum(all_f) - alll * 0.2} Ж. больше чем нужно.',
+                                         parse_mode='html')
+                    if sum(all_f) < alll and alll * 0.2 - sum(all_f) > alll * 0.03:
+                        bot.send_message(message.chat.id,
+                                         f'Cегодня вы съели на {alll * 0.2 - sum(all_f)} Ж. больше чем нужно.',
+                                         parse_mode='html')
+                    if sum(all_c) > alll and sum(all_c) - alll * 0.5 > alll * 0.03:
+                        bot.send_message(message.chat.id,
+                                         f'Cегодня вы съели на {sum(all_c) - alll * 0.2} У. больше чем нужно.',
+                                         parse_mode='html')
+                    if sum(all_c) < alll and alll * 0.5 - sum(all_c) > alll * 0.03:
+                        bot.send_message(message.chat.id,
+                                         f'Cегодня вы съели на {alll * 0.2 - sum(all_c)} У. больше чем нужно.',
+                                         parse_mode='html')
+                elif int(*assa) > sum(allkkal) and int(*assa) - sum(allkkal) > 150:
+                    print('all_p = ', all_p)
+                    print('all_f = ', all_p)
+                    print('all_c = ', all_p)
+                    print('assa =', int(*assa))
+                    print('alll = ', alll)
+                    bot.send_message(message.chat.id, f'Это на {int(*assa) - sum(allkkal)} меньше чем нужно, старайтесь есть больше, иначе цель не будет достигнута',
                                      parse_mode='html')
-                if sum(all_f) > alll and sum(all_f) - alll * 0.2 > alll * 0.03:
-                    bot.send_message(message.chat.id,
-                                     f'Cегодня вы съели на {sum(all_f) - alll * 0.2} Ж. больше чем нужно.',
-                                     parse_mode='html')
-                elif sum(all_f) < alll and alll * 0.2 - sum(all_f) > alll * 0.03:
-                    bot.send_message(message.chat.id,
-                                     f'Cегодня вы съели на {alll * 0.2 - sum(all_f)} Ж. больше чем нужно.',
-                                     parse_mode='html')
-                if sum(all_c) > alll and sum(all_c) - alll * 0.5 > alll * 0.03:
-                    bot.send_message(message.chat.id,
-                                     f'Cегодня вы съели на {sum(all_c) - alll * 0.2} У. больше чем нужно.',
-                                     parse_mode='html')
-                elif sum(all_c) < alll and alll * 0.5 - sum(all_c) > alll * 0.03:
-                    bot.send_message(message.chat.id,
-                                     f'Cегодня вы съели на {alll * 0.2 - sum(all_c)} У. больше чем нужно.',
-                                     parse_mode='html')
-            elif int(*assa) > sum(allkkal) and int(*assa) - sum(allkkal) > 150:
-                bot.send_message(message.chat.id, f'Это на {int(*assa) - sum(allkkal)} меньше чем нужно, старайтесь есть больше, иначе цель не будет достигнута',
-                                 parse_mode='html')
-                bot.send_message(message.chat.id, f'БЖУ: {sum(all_p)} {sum(all_f)} {sum(all_c)}.', parse_mode='html')
+                    bot.send_message(message.chat.id, f'БЖУ: {sum(all_p)} {sum(all_f)} {sum(all_c)}.', parse_mode='html')
+                    if sum(all_p) > alll * 0.3 + alll * 0.03:
+                        bot.send_message(message.chat.id,
+                                         f'Cегодня вы съели на {sum(all_p) - alll * 0.3} Б. больше чем нужно.',
+                                         parse_mode='html')
+                    if sum(all_p) < alll and alll * 0.3 - sum(all_p) > alll * 0.03:
+                        bot.send_message(message.chat.id,
+                                         f'Cегодня вы съели на {alll * 0.3 - sum(all_p)} Б. больше чем нужно.',
+                                         parse_mode='html')
+                    if sum(all_f) > alll and sum(all_f) - alll * 0.2 > alll * 0.03:
+                        bot.send_message(message.chat.id,
+                                         f'Cегодня вы съели на {sum(all_f) - alll * 0.2} Ж. больше чем нужно.',
+                                         parse_mode='html')
+                    if sum(all_f) < alll and alll * 0.2 - sum(all_f) > alll * 0.03:
+                        bot.send_message(message.chat.id,
+                                         f'Cегодня вы съели на {alll * 0.2 - sum(all_f)} Ж. больше чем нужно.',
+                                         parse_mode='html')
+                    if sum(all_c) > alll and sum(all_c) - alll * 0.5 > alll * 0.03:
+                        bot.send_message(message.chat.id,
+                                         f'Cегодня вы съели на {sum(all_c) - alll * 0.2} У. больше чем нужно.',
+                                         parse_mode='html')
+                    if sum(all_c) < alll and alll * 0.5 - sum(all_c) > alll * 0.03:
+                        bot.send_message(message.chat.id,
+                                         f'Cегодня вы съели на {alll * 0.2 - sum(all_c)} У. больше чем нужно.',
+                                         parse_mode='html')
 
-            elif abs(int(*assa) - sum(allkkal)) < 150:
-                bot.send_message(message.chat.id,
-                                 f'Cегодня вы поели в пределах нормы для достижения вашей цели, так держать!',
-                                 parse_mode='html')
+                elif abs(int(*assa) - sum(allkkal)) < 150:
+                    bot.send_message(message.chat.id,
+                                     f'Cегодня вы поели в пределах нормы для достижения вашей цели, так держать!',
+                                     parse_mode='html')
 
-            print(*assa, '---assa---')
-            print(sum(allkkal), '---allkkal---')
+                print(*assa, '---assa---')
+                print(sum(allkkal), '---allkkal---')
         else:
             bot.send_message(message.chat.id, f'Сегодня вы не ели(',
                              parse_mode='html')
