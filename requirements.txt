@@ -1,0 +1,5 @@
+telebot            0.0.5
+pymorphy2          0.9.1
+pymorphy2-dicts-ru 2.4.417127.4579844
+pyTelegramBotAPI   4.11.0
+urllib3            1.26.15
