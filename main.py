@@ -146,14 +146,20 @@ def profile(message):
 
         try:
             zavtrak = cur.execute(f'''SELECT kkal FROM userdata 
-                                    WHERE user_id = {message.from_user.id} AND priem = "{zav}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                    WHERE user_id = {message.from_user.id} 
+                                    AND priem = "{zav}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
 
             z_prot = cur.execute(f'''SELECT proteins FROM userdata 
-                                                WHERE user_id = {message.from_user.id} AND priem = "{zav}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                    WHERE user_id = {message.from_user.id} AND priem = "{zav}" 
+                                    AND date = "{datetime.datetime.now().date()}"''').fetchall()
             z_fats = cur.execute(f'''SELECT fats FROM userdata 
-                                                            WHERE user_id = {message.from_user.id} AND priem = "{zav}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                    WHERE user_id = {message.from_user.id} 
+                                    AND priem = "{zav}" 
+                                    AND date = "{datetime.datetime.now().date()}"''').fetchall()
             z_carbohydrates = cur.execute(f'''SELECT carbohydrates FROM userdata 
-                                                            WHERE user_id = {message.from_user.id} AND priem = "{zav}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                            WHERE user_id = {message.from_user.id} 
+                                            AND priem = "{zav}" 
+                                            AND date = "{datetime.datetime.now().date()}"''').fetchall()
             z_f = []
             for i in z_fats:
                 z_f.append(int(*i))
@@ -179,13 +185,21 @@ def profile(message):
 
         try:
             obed = cur.execute(f'''SELECT kkal FROM userdata 
-                                        WHERE user_id = {message.from_user.id} AND priem = "{obe}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                WHERE user_id = {message.from_user.id} 
+                                AND priem = "{obe}" 
+                                AND date = "{datetime.datetime.now().date()}"''').fetchall()
             o_prot = cur.execute(f'''SELECT proteins FROM userdata 
-                                                            WHERE user_id = {message.from_user.id} AND priem = "{obe}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                    WHERE user_id = {message.from_user.id} 
+                                    AND priem = "{obe}" 
+                                    AND date = "{datetime.datetime.now().date()}"''').fetchall()
             o_fats = cur.execute(f'''SELECT fats FROM userdata 
-                                                                        WHERE user_id = {message.from_user.id} AND priem = "{obe}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                    WHERE user_id = {message.from_user.id} 
+                                    AND priem = "{obe}" 
+                                    AND date = "{datetime.datetime.now().date()}"''').fetchall()
             o_carbohydrates = cur.execute(f'''SELECT carbohydrates FROM userdata 
-                                                                        WHERE user_id = {message.from_user.id} AND priem = "{obe}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                            WHERE user_id = {message.from_user.id} 
+                                            AND priem = "{obe}" 
+                                            AND date = "{datetime.datetime.now().date()}"''').fetchall()
             o_f = []
             for i in o_fats:
                 o_f.append(int(*i))
@@ -211,13 +225,21 @@ def profile(message):
 
         try:
             ujin = cur.execute(f'''SELECT kkal FROM userdata 
-                                        WHERE user_id = {message.from_user.id} AND priem = "{uji}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                WHERE user_id = {message.from_user.id} 
+                                AND priem = "{uji}" 
+                                AND date = "{datetime.datetime.now().date()}"''').fetchall()
             u_prot = cur.execute(f'''SELECT proteins FROM userdata 
-                                                                        WHERE user_id = {message.from_user.id} AND priem = "{uji}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                    WHERE user_id = {message.from_user.id} 
+                                    AND priem = "{uji}" 
+                                    AND date = "{datetime.datetime.now().date()}"''').fetchall()
             u_fats = cur.execute(f'''SELECT fats FROM userdata 
-                                                                                    WHERE user_id = {message.from_user.id} AND priem = "{uji}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                    WHERE user_id = {message.from_user.id} 
+                                    AND priem = "{uji}" 
+                                    AND date = "{datetime.datetime.now().date()}"''').fetchall()
             u_carbohydrates = cur.execute(f'''SELECT carbohydrates FROM userdata 
-                                                                                    WHERE user_id = {message.from_user.id} AND priem = "{uji}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                            WHERE user_id = {message.from_user.id} 
+                                            AND priem = "{uji}" 
+                                            AND date = "{datetime.datetime.now().date()}"''').fetchall()
             u_f = []
             for i in u_fats:
                 u_f.append(int(*i))
@@ -243,13 +265,21 @@ def profile(message):
 
         try:
             perekus = cur.execute(f'''SELECT kkal FROM userdata 
-                                        WHERE user_id = {message.from_user.id} AND priem = "{per}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                        WHERE user_id = {message.from_user.id} 
+                                        AND priem = "{per}" 
+                                        AND date = "{datetime.datetime.now().date()}"''').fetchall()
             p_prot = cur.execute(f'''SELECT proteins FROM userdata 
-                                                                                    WHERE user_id = {message.from_user.id} AND priem = "{per}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                    WHERE user_id = {message.from_user.id} 
+                                    AND priem = "{per}" 
+                                    AND date = "{datetime.datetime.now().date()}"''').fetchall()
             p_fats = cur.execute(f'''SELECT fats FROM userdata 
-                                                                                                WHERE user_id = {message.from_user.id} AND priem = "{per}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                    WHERE user_id = {message.from_user.id} 
+                                    AND priem = "{per}" 
+                                    AND date = "{datetime.datetime.now().date()}"''').fetchall()
             p_carbohydrates = cur.execute(f'''SELECT carbohydrates FROM userdata 
-                                                                                                WHERE user_id = {message.from_user.id} AND priem = "{per}" AND date = "{datetime.datetime.now().date()}"''').fetchall()
+                                            WHERE user_id = {message.from_user.id} 
+                                            AND priem = "{per}" 
+                                            AND date = "{datetime.datetime.now().date()}"''').fetchall()
             p_f = []
             for i in p_fats:
                 p_f.append(int(*i))
@@ -269,7 +299,6 @@ def profile(message):
             all_f.append(sum(p_f))
             all_c.append(sum(p_c))
             print('перекус', perekus)
-
 
         except sqlite3.OperationalError:
             bot.send_message(message.chat.id, f'На перекус: у вас не было перекуса.', parse_mode='html')
@@ -295,7 +324,9 @@ def profile(message):
             if type(assa) != "<class 'NoneType'>":
                 alll = sum([sum(all_p), sum(all_c), sum(all_f)])
                 print('111')
-                bot.send_message(message.chat.id, f'Сегодня вы съели {sum(allkkal)} {res.make_agree_with_number(sum(allkkal)).word}.', parse_mode='html')
+                bot.send_message(message.chat.id,
+                                 f'Сегодня вы съели {sum(allkkal)} {res.make_agree_with_number(sum(allkkal)).word}.',
+                                 parse_mode='html')
                 print(assa)
                 if int(*assa) < sum(allkkal) and sum(allkkal) - int(*assa) > 150:
                     print('all_p = ', all_p)
@@ -309,31 +340,39 @@ def profile(message):
                                      f'Это на {sum(allkkal) - int(*assa)} больше чем нужно,'
                                      f' старайтесь есть меньше, иначе цель не будет достигнута',
                                      parse_mode='html')
-                    bot.send_message(message.chat.id, f'БЖУ: {sum(all_p)} {sum(all_f)} {sum(all_c)}.', parse_mode='html')
+                    bot.send_message(message.chat.id,
+                                     f'БЖУ: {sum(all_p)} {sum(all_f)} {sum(all_c)}.', parse_mode='html')
+
                     if sum(all_p) > alll and sum(all_p) - alll * 0.3 > alll * 0.03:
                         bot.send_message(message.chat.id,
                                          f'Cегодня вы съели на {sum(all_p) - alll * 0.3} Б. больше чем нужно.',
                                          parse_mode='html')
+
                     if sum(all_p) < alll and alll * 0.3 - sum(all_p) > alll * 0.03:
                         bot.send_message(message.chat.id,
                                          f'Cегодня вы съели на {alll * 0.3 - sum(all_p)} Б. больше чем нужно.',
                                          parse_mode='html')
+
                     if sum(all_f) > alll and sum(all_f) - alll * 0.2 > alll * 0.03:
                         bot.send_message(message.chat.id,
                                          f'Cегодня вы съели на {sum(all_f) - alll * 0.2} Ж. больше чем нужно.',
                                          parse_mode='html')
+
                     if sum(all_f) < alll and alll * 0.2 - sum(all_f) > alll * 0.03:
                         bot.send_message(message.chat.id,
                                          f'Cегодня вы съели на {alll * 0.2 - sum(all_f)} Ж. больше чем нужно.',
                                          parse_mode='html')
+
                     if sum(all_c) > alll and sum(all_c) - alll * 0.5 > alll * 0.03:
                         bot.send_message(message.chat.id,
                                          f'Cегодня вы съели на {sum(all_c) - alll * 0.2} У. больше чем нужно.',
                                          parse_mode='html')
+
                     if sum(all_c) < alll and alll * 0.5 - sum(all_c) > alll * 0.03:
                         bot.send_message(message.chat.id,
                                          f'Cегодня вы съели на {alll * 0.2 - sum(all_c)} У. больше чем нужно.',
                                          parse_mode='html')
+
                 elif int(*assa) > sum(allkkal) and int(*assa) - sum(allkkal) > 150:
                     print('all_p = ', all_p)
                     print('all_f = ', all_p)
@@ -343,26 +382,32 @@ def profile(message):
                     bot.send_message(message.chat.id, f'Это на {int(*assa) - sum(allkkal)} меньше чем нужно, старайтесь есть больше, иначе цель не будет достигнута',
                                      parse_mode='html')
                     bot.send_message(message.chat.id, f'БЖУ: {sum(all_p)} {sum(all_f)} {sum(all_c)}.', parse_mode='html')
+
                     if sum(all_p) > alll * 0.3 + alll * 0.03:
                         bot.send_message(message.chat.id,
                                          f'Cегодня вы съели на {sum(all_p) - alll * 0.3} Б. больше чем нужно.',
                                          parse_mode='html')
+
                     if sum(all_p) < alll and alll * 0.3 - sum(all_p) > alll * 0.03:
                         bot.send_message(message.chat.id,
                                          f'Cегодня вы съели на {alll * 0.3 - sum(all_p)} Б. больше чем нужно.',
                                          parse_mode='html')
+
                     if sum(all_f) > alll and sum(all_f) - alll * 0.2 > alll * 0.03:
                         bot.send_message(message.chat.id,
                                          f'Cегодня вы съели на {sum(all_f) - alll * 0.2} Ж. больше чем нужно.',
                                          parse_mode='html')
+
                     if sum(all_f) < alll and alll * 0.2 - sum(all_f) > alll * 0.03:
                         bot.send_message(message.chat.id,
                                          f'Cегодня вы съели на {alll * 0.2 - sum(all_f)} Ж. больше чем нужно.',
                                          parse_mode='html')
+
                     if sum(all_c) > alll and sum(all_c) - alll * 0.5 > alll * 0.03:
                         bot.send_message(message.chat.id,
                                          f'Cегодня вы съели на {sum(all_c) - alll * 0.2} У. больше чем нужно.',
                                          parse_mode='html')
+
                     if sum(all_c) < alll and alll * 0.5 - sum(all_c) > alll * 0.03:
                         bot.send_message(message.chat.id,
                                          f'Cегодня вы съели на {alll * 0.2 - sum(all_c)} У. больше чем нужно.',
@@ -375,9 +420,11 @@ def profile(message):
 
                 print(*assa, '---assa---')
                 print(sum(allkkal), '---allkkal---')
+
         else:
             bot.send_message(message.chat.id, f'Сегодня вы не ели(',
                              parse_mode='html')
+
     else:
         bot.send_message(message.chat.id, f'Сначала заполните свои данные.',
                          parse_mode='html')
@@ -534,8 +581,10 @@ def food(message):
         fats_for_that = int(fats_for_that * a)
         carbohydrates_for_that = int(carbohydrates_for_that * a)
         cur = con.cursor()
-        cur.execute(f"""INSERT INTO userdata (user_id, kkal, priem, date, proteins, fats, carbohydrates) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                    (message.from_user.id, kkal_for_that, priem, datetime.datetime.now().date(), proteins_for_that, fats_for_that, carbohydrates_for_that))
+        cur.execute(f"""INSERT INTO userdata (user_id, kkal, priem, date, proteins, fats, carbohydrates)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                    (message.from_user.id, kkal_for_that, priem, datetime.datetime.now().date(),
+                     proteins_for_that, fats_for_that, carbohydrates_for_that))
         con.commit()
         cur.close()
         bot.send_message(message.chat.id, f'Вы съели {kkal_for_that} ккал, {proteins_for_that} белков, '
@@ -546,10 +595,13 @@ def food(message):
         markup.add(types.KeyboardButton('food'))
         markup.add(types.KeyboardButton('/profile'))
         markup.add(types.KeyboardButton(f'{priem_for_print}'))
-        bot.send_message(message.chat.id, f'Для продолжения записи продуктов в этот прием пищи нажмите {priem_for_print}', reply_markup=markup)
+        bot.send_message(message.chat.id,
+                         f'Для продолжения записи продуктов в этот прием пищи нажмите {priem_for_print}',
+                         reply_markup=markup)
 
     if str(type(morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}))) != "<class 'NoneType'>":
         print(type(morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'})))
+
         if morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}).word in bluda:
             print('aaaaaaaaaaaaaaaaaaaa', morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}).word)
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -573,8 +625,6 @@ def food(message):
 
             else:
                 bot.send_message(message.chat.id, 'какой именно?', reply_markup=markup)
-
-
 
             bludo = morph.parse(message.text.lower())[0].inflect({'sing', 'nomn'}).word
             vidi = ress
